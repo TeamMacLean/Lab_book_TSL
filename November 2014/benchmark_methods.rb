@@ -10,6 +10,7 @@ require 'benchmark'
 require 'pp'
 
 class Perm
+  
   def initialize length
     @ordered_list = (1..length).to_a.collect {|e| e.to_s }
     @shuffled_list = @ordered_list.shuffle
@@ -41,6 +42,15 @@ class Perm
     true
   end
   
+  def delete_compact
+    while @ordered_list.compact.length > 1
+      @ordered_list[@indexed_hash[@shuffled_list.shift]] = nil
+      @ordered_list[@indexed_hash[@shuffled_list.pop]] = nil
+      @shuffled_list.shuffle
+    end
+    true
+  end
+  
 end
 
 
@@ -52,6 +62,8 @@ def benchmark_me n, length
     b.report {n.times do ; p=Perm.new(length); p.delete_array; end}
     puts "by hash..."
     b.report {n.times do ; p=Perm.new(length); p.delete_hash; end}
+    puts "by adding nil"
+    b.report {n.times do ; p=Perm.new(length); p.delete_compact; end}
   end
 end
 
